@@ -2,7 +2,9 @@ import requests
 from peewee import *
 from bs4 import BeautifulSoup
 from twisted.internet import task, reactor
-db=SqliteDatabase('laptopovi.db')
+
+
+db = SqliteDatabase('laptopovi.db')
 
 
 class BaseModel(Model):
@@ -30,7 +32,6 @@ def webScrape():
     print("executing")
 
     for li in soup.findAll('li', attrs={'class':'item'}):
-
         naziv=li.find('span', attrs={'itemprop':'name'})
         #print(naziv.text.replace('/',"-").replace('.',"-").replace('"',"-"))
         broj_komentara=li.find('div', attrs={'class':'ratings'}).find('span',attrs={'class':'text-info'})
@@ -57,7 +58,9 @@ def webScrape():
                           url=url.get('href'))
 
 
-loop = task.LoopingCall(webScrape)
-loop.start(timeout)
-reactor.run()
+def looping():
+    loop = task.LoopingCall(webScrape)
+    loop.start(timeout)
+    reactor.run()
+
 db.close()
