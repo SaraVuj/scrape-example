@@ -2,7 +2,7 @@
 #DB_FILE_NAME = 'database.db'
 
 #Scraping settings
-#URL = 'https://...'
+#URLS = [{'type': 'type', 'url': 'https://...'}, ...]
 #USER_AGENT = 'Mozilla/5.0 (Windows NT 6.0; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0'
 
 #StastDClient settings

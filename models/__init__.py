@@ -7,20 +7,20 @@ class BaseModel(Model):
         database = db
 
 
-class Laptop(BaseModel):
+class Product(BaseModel):
     title = CharField()
     comments = IntegerField()
     price = IntegerField()
     url = CharField()
 
     @staticmethod
-    def get_all_laptops():
-        return Laptop.select()
+    def get_all_products():
+        return Product.select()
 
     @staticmethod
-    def get_laptop_by_title(title):
-        laptop = Laptop.select().where(Laptop.title == title)
-        if laptop.exists():
-            return laptop
+    def get_product_by_title(title):
+        product = Product.select().where(Product.title == title)
+        if product.exists():
+            return product
         else:
             return None
