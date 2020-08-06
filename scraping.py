@@ -1,3 +1,6 @@
-from app import looping
+from app import initialize
+from app import web_scrape
+from looping import looping
 
-looping()
+initialize()
+looping(web_scrape)

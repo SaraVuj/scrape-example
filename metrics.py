@@ -1,18 +1,11 @@
-from app import Laptop
-from app import db, timeout
+from models import Laptop
 from statsd import StatsClient
-from twisted.internet import task, reactor
-c = StatsClient(host="192.168.76.140",port=8125,prefix="laptopovi")
+from config import STATSD_HOST, STATSD_PORT, STATSD_PREFIX
 
-db.connect()
-def send_matrics():
-    for laptop in Laptop.select():
-        c.incr(laptop.naziv.replace('\xa0', ' ') + ".comments", laptop.broj_komentara)
-        c.incr(laptop.naziv.replace('\xa0', ' ') + ".price", laptop.cena)
+c = StatsClient(host=STATSD_HOST, port=STATSD_PORT, prefix=STATSD_PREFIX)
 
-def sending():
-    loop = task.LoopingCall(send_matrics)
-    loop.start(timeout)
-    reactor.run()
 
-db.close()
+def send_metrics():
+    for laptop in Laptop.get_all_laptops():
+        c.incr(laptop.title + ".comments", laptop.comments)
+        c.incr(laptop.title + ".price", laptop.price)

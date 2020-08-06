@@ -1,66 +1,40 @@
 import requests
-from peewee import *
 from bs4 import BeautifulSoup
-from twisted.internet import task, reactor
+from db import db
+from models import Laptop
+from config import URL, USER_AGENT
 
 
-db = SqliteDatabase('laptopovi.db')
+def initialize():
+    db.connect()
+    db.create_tables([Laptop])
 
 
-class BaseModel(Model):
-    class Meta:
-        database=db
-
-class Laptop(BaseModel):
-    naziv=CharField()
-    broj_komentara=IntegerField()
-    cena=IntegerField()
-    url=CharField()
-
-db.connect()
-db.create_tables([Laptop])
-
-timeout=600.0
-
-def webScrape():
-    url = "https://www.winwin.rs/laptop-i-tablet-racunari/laptop-notebook-racunari.html?manufacturer=53794"
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.0; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0'}
+def web_scrape():
+    url = URL
+    headers = {'User-Agent': USER_AGENT}
 
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.text, "html.parser")
 
-    print("executing")
-
-    for li in soup.findAll('li', attrs={'class':'item'}):
-        naziv=li.find('span', attrs={'itemprop':'name'})
-        #print(naziv.text.replace('/',"-").replace('.',"-").replace('"',"-"))
-        broj_komentara=li.find('div', attrs={'class':'ratings'}).find('span',attrs={'class':'text-info'})
-        if broj_komentara:
-            #print(broj_komentara.text)
-            broj=int(broj_komentara.text)
+    for li in soup.findAll('li', attrs={'class': 'item'}):
+        title = li.find('span', attrs={'itemprop': 'name'})
+        comments = li.find('div', attrs={'class': 'ratings'}).find('span', attrs={'class': 'text-info'})
+        if comments:
+            count = int(comments.text)
         else:
-            broj=0
-        special_price = li.find('p',attrs={'class':'special-price'})
+            count = 0
+        special_price = li.find('p', attrs={'class': 'special-price'})
         if special_price:
-            cena = special_price.find('span',attrs={'class':'price'})
+            price = special_price.find('span', attrs={'class': 'price'})
         else:
-            cena=li.find('span',attrs={'class':'price'})
-        #print(cena.text[:-4]) # RSD izbacen
-        url=li.find('a', href=True, attrs={'class':'product-image'})
-        #print(url.get('href'))
-        model=naziv.text.replace('/',"-").replace('.',"-").replace('"',"-")
-        laptop = Laptop.select().where(Laptop.naziv == model)
-        if laptop.exists():
-           pass
+            price = li.find('span', attrs={'class': 'price'})
+        url = li.find('a', href=True, attrs={'class': 'product-image'})
+        model = title.text.replace('/', '-').replace('.', '-').replace('"', '-').replace('\xa0', '-')
+        laptop = Laptop.get_laptop_by_title(model)
+        if laptop:
+            pass
         else:
-            Laptop.create(naziv=model,
-                          broj_komentara=broj, cena=int(cena.text[:-4].replace('.', "")),
+            Laptop.create(title=model,
+                          comments=count, price=int(price.text[:-4].replace('.', "")),
                           url=url.get('href'))
-
-
-def looping():
-    loop = task.LoopingCall(webScrape)
-    loop.start(timeout)
-    reactor.run()
-
-db.close()
