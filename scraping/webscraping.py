@@ -1,13 +1,13 @@
 import requests
 from bs4 import BeautifulSoup
 from db import db
-from models import Product
+from models import Product, Category
 from config import URLS, USER_AGENT
 
 
 def initialize():
     db.connect()
-    db.create_tables([Product])
+    db.create_tables([Category, Product])
 
 
 def web_scrape():
@@ -18,6 +18,13 @@ def web_scrape():
 
             response = requests.get(url, headers=headers)
             soup = BeautifulSoup(response.text, "html.parser")
+            category = soup.find('div', attrs={'class': 'category-title'})
+            category_name = category.text.replace('/', '-').replace('\u0161', 's').replace('\u010d', 'c').replace('\u017e', 'z').strip()
+            cat = Category.get_category_by_name(category_name)
+            if cat:
+                pass
+            else:
+                cat = Category.create(name=category_name)
 
             for li in soup.findAll('li', attrs={'class': 'item'}):
                 title = li.find('span', attrs={'itemprop': 'name'})
@@ -39,4 +46,4 @@ def web_scrape():
                 else:
                     Product.create(title=model,
                                    comments=count, price=int(price.text[:-4].replace('.', "")),
-                                   url=url.get('href'))
+                                   url=url.get('href'), category=cat)

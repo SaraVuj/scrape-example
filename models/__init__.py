@@ -7,11 +7,31 @@ class BaseModel(Model):
         database = db
 
 
+class Category(BaseModel):
+    name = CharField()
+
+    @staticmethod
+    def get_all_categories():
+        return  Category.select()
+
+    @staticmethod
+    def get_category_by_name(name):
+        category = Category.select().where(Category.name == name)
+        if category.exists():
+            return category
+        else:
+            return None
+
+    def get_all_products_for_category(self):
+        return Product.select().where(Product.category == self)
+
+
 class Product(BaseModel):
     title = CharField()
     comments = IntegerField()
     price = IntegerField()
     url = CharField()
+    category = ForeignKeyField(Category, backref='products')
 
     @staticmethod
     def get_all_products():
