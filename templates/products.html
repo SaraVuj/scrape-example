@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Products</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>Comments</th>
+            <th>Price</th>
+            <th>URL</th>
+            <th>Actions</th>
+        </tr>
+        {% for product in products%}
+        <tr>
+            <td>{{product.title}}</td>
+            <td>{{product.comments}}</td>
+            <td>{{product.price}}</td>
+            <td><a href={{product.url}}>link</a></td>
+            <td>
+                <form action="{{ url_for('delete_product') }}" method="post">
+                    <input type="hidden" name="title" value="{{product.title}}"/>
+                    <input type="submit" value="Delete"/>
+                </form>
+            </td>
+            <td>
+                 <form action="{{ url_for('render_update_product') }}" method="post">
+                    <input type="hidden" name="title" value="{{product.title}}"/>
+                    <input type="submit" value="Modify"/>
+                </form>
+            </td>
+        </tr>
+        {%endfor%}
+    </table>
+</body>
+</html>
