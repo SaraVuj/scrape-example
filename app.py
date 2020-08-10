@@ -1,8 +1,17 @@
 from flask import Flask, g, request, jsonify, redirect, url_for
 from db import db
 from models import Product
+from flask_httpauth import HTTPTokenAuth
+from config import TOKEN
 
 app = Flask(__name__)
+auth = HTTPTokenAuth(scheme='Bearer')
+
+
+@auth.verify_token
+def verify_token(token):
+    if token == TOKEN:
+        return token
 
 
 @app.before_request
@@ -18,24 +27,28 @@ def after_request(response):
 
 
 @app.route('/products')
+@auth.login_required
 def get_all_products():
     products = Product.get_all_products()
     return jsonify([product.to_json() for product in products])
 
 
 @app.route('/products/<title>')
+@auth.login_required
 def get_product(title):
     product = Product.get_product_by_title(title).get()
     return product.to_json()
 
 
 @app.route('/products/<title>', methods=['DELETE'])
+@auth.login_required
 def delete_product(title):
     Product.delete_by_title(title)
     return redirect(url_for('get_all_products'))
 
 
 @app.route('/products/<title>', methods=['PUT'])
+@auth.login_required
 def update_product(title):
     old_title = title
     product = Product.get_product_by_title(old_title).get()

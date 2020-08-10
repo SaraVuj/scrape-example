@@ -9,3 +9,6 @@
 #STATSD_HOST = 'localhost'
 #STATSD_PORT = 8125
 #STATSD_PREFIX = 'prefix'
+
+#Token
+#TOKEN = 'token'
