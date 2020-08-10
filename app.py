@@ -3,15 +3,17 @@ from db import db
 from models import Product
 from flask_httpauth import HTTPTokenAuth
 from config import TOKEN
-
+from base64 import b64decode, b64encode
 app = Flask(__name__)
 auth = HTTPTokenAuth(scheme='Bearer')
+
+auth_token = b64encode(TOKEN.encode())
 
 
 @auth.verify_token
 def verify_token(token):
-    if token == TOKEN:
-        return token
+    if b64decode(token).decode() == TOKEN:
+        return auth_token
 
 
 @app.before_request
