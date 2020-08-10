@@ -7,20 +7,40 @@ class BaseModel(Model):
         database = db
 
 
-class Laptop(BaseModel):
+class Category(BaseModel):
+    name = CharField()
+
+    @staticmethod
+    def get_all_categories():
+        return  Category.select()
+
+    @staticmethod
+    def get_category_by_name(name):
+        category = Category.select().where(Category.name == name)
+        if category.exists():
+            return category
+        else:
+            return None
+
+    def get_all_products_for_category(self):
+        return Product.select().where(Product.category == self)
+
+
+class Product(BaseModel):
     title = CharField()
     comments = IntegerField()
     price = IntegerField()
     url = CharField()
+    category = ForeignKeyField(Category, backref='products')
 
     @staticmethod
-    def get_all_laptops():
-        return Laptop.select()
+    def get_all_products():
+        return Product.select()
 
     @staticmethod
-    def get_laptop_by_title(title):
-        laptop = Laptop.select().where(Laptop.title == title)
-        if laptop.exists():
-            return laptop
+    def get_product_by_title(title):
+        product = Product.select().where(Product.title == title)
+        if product.exists():
+            return product
         else:
             return None
