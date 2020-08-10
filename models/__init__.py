@@ -53,7 +53,7 @@ class Product(BaseModel):
     def save_changes(self):
         self.save()
 
-    def json(self):
+    def to_json(self):
         return {
             'title': self.title,
             'comments': self.comments,
