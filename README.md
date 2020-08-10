@@ -4,5 +4,7 @@ This example scrapes data from website and stores new scraped data in database e
 
 1. Create virtual environment.
 2. Copy config.py.example and modify it.
-3. Run scraping.py
-4. Run sending_metrics.py
+3. Run scraping.py.
+4. Run sending_metrics.py.
+
+ For manipulating with products, run app.py.
