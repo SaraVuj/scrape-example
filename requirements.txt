@@ -16,3 +16,4 @@ statsd==3.3.0
 Twisted==20.3.0
 urllib3==1.25.10
 zope.interface==5.1.0
+Flask==1.1.2

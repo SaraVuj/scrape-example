@@ -12,7 +12,7 @@ class Category(BaseModel):
 
     @staticmethod
     def get_all_categories():
-        return  Category.select()
+        return Category.select()
 
     @staticmethod
     def get_category_by_name(name):
@@ -44,3 +44,19 @@ class Product(BaseModel):
             return product
         else:
             return None
+
+    @staticmethod
+    def delete_by_title(title):
+        product = Product.get(Product.title == title)
+        product.delete_instance()
+
+    def save_changes(self):
+        self.save()
+
+    def to_json(self):
+        return {
+            'title': self.title,
+            'comments': self.comments,
+            'price': self.price,
+            'url': self.url
+        }

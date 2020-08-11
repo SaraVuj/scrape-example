@@ -39,7 +39,7 @@ def web_scrape():
                 else:
                     price = li.find('span', attrs={'class': 'price'})
                 url = li.find('a', href=True, attrs={'class': 'product-image'})
-                model = title.text.replace('/', '-').replace('.', '-').replace('"', '-').replace('\xa0', '-').replace('\u0161', 's').replace('\u010d', 'c').replace('\u017e', 'z')
+                model = title.text.replace('/', '-').replace(' ', '-').replace(',', '-').replace('*', '-').replace('.', '-').replace('"', '-').replace('\xa0', '-').replace('\u0161', 's').replace('\u010d', 'c').replace('\u017e', 'z')
                 product = Product.get_product_by_title(model)
                 if product:
                     pass
